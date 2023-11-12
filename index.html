@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Amigo Secreto</title>
+    <link rel="icon" type="image/x-icon" href="favicon.png" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/hack-font/3.3.0/web/hack.min.css"
+      integrity="sha512-XgCw4Srl8lC1ECwcaHwAU0WnxQwHkqmInzg9wJLtGB7DRuMaXPuK2k9WJ2AwRDGdrgK9eJpZl2hUlLi2WQssmw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <script src="jszip.min.js"></script>
+    <style>
+      body {
+        text-align: center;
+        font-family: Hack, monospace;
+        background: rgb(255, 255, 255);
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 1) 0%,
+          rgba(189, 198, 231, 1) 50%
+        );
+      }
+      textarea {
+        font-size: 2em;
+        width: 80%;
+        max-width: 400px;
+        height: 50vh;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Sorteio de amigo secreto</h1>
+    <textarea id="names" spellcheck="false"></textarea>
+    <br /><br />
+    <button
+      id="shuffle"
+      onclick="shuffle()"
+      class="ui-button ui-widget ui-corner-all"
+    >
+      Sortear
+    </button>
+    <script>
+      function shuffle() {
+        const names = shuffleArray(
+          document
+            .getElementById("names")
+            .value.split("\n")
+            .filter((n) => n != ""),
+        );
+
+        names_size = names.length;
+        map = {};
+
+        for (i = 0; i < names_size; i++) {
+          map[names[i]] = names[(i + 1) % names_size];
+        }
+
+        generateZip(map);
+      }
+
+      function generateZip(map) {
+        const zip = new JSZip();
+
+        for (let [key, value] of Object.entries(map))
+          zip.file(`${key}.txt`, `${key} você tirou ${value}\n`);
+
+        zip.generateAsync({ type: "base64" }).then(function (content) {
+          window.location = "data:application/zip;base64," + content;
+        });
+      }
+
+      function shuffleArray(array) {
+        for (var i = array.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var temp = array[i];
+          array[i] = array[j];
+          array[j] = temp;
+        }
+
+        return array;
+      }
+    </script>
+  </body>
+</html>
